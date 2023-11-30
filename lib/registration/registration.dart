@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_app/login/login.dart';
 import 'package:login_app/registration/bloc/registration_bloc.dart';
 import 'package:login_app/repository/authentification_repository.dart';
 import 'package:login_app/repository/user_repository.dart';
@@ -24,11 +25,13 @@ class _RegistrationState extends State<Registration> {
             RepositoryProvider.of<AuthentificationRepository>(context),
         userRepository: UserRepository(),
       ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Registration'),
+      child: const Scaffold(
+        body: Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [FormRegistration()],
         ),
-        body: const FormRegistration(),
       ),
     );
   }
@@ -39,8 +42,21 @@ class FormRegistration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [InputEmail(), InputPassword(), SubmitButton()],
+    return const SizedBox(
+      width: 290,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconApp(),
+          InputEmail(),
+          Padding(padding: EdgeInsets.all(10.00)),
+          InputPassword(),
+          Padding(padding: EdgeInsets.all(10.00)),
+          SubmitButton(),
+          LinkToLoginPage()
+        ],
+      ),
     );
   }
 }
@@ -53,6 +69,11 @@ class InputEmail extends StatelessWidget {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         return TextField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.email_rounded),
+            labelText: 'Email',
+          ),
           onChanged: (value) => context
               .read<RegistrationBloc>()
               .add(EmailChangeEvent(email: value)),
@@ -70,6 +91,12 @@ class InputPassword extends StatelessWidget {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         return TextField(
+          obscureText: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.password_outlined),
+            labelText: 'Password',
+          ),
           onChanged: (value) => context
               .read<RegistrationBloc>()
               .add(PasswordChangeEvent(password: value)),
@@ -87,11 +114,32 @@ class SubmitButton extends StatelessWidget {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         return TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+          ),
           child: const Text('register'),
           onPressed: () =>
               context.read<RegistrationBloc>().add(const OnSubmitEvent()),
         );
       },
     );
+  }
+}
+
+class LinkToLoginPage extends StatelessWidget {
+  const LinkToLoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.black45,
+        ),
+        onPressed: () {
+          Navigator.of(context)
+              .pushAndRemoveUntil(LoginPage.route(), (route) => false);
+        },
+        child: const Text('already have an accont?'));
   }
 }
