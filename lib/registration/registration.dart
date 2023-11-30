@@ -115,17 +115,16 @@ class InputEmail extends StatelessWidget {
       builder: (context, state) {
         return TextField(
           decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              prefixIcon: const Icon(Icons.email_rounded),
-              labelText: 'Email',
-              error: (!state.email.isValid && !state.status.isInitial)
-                  ? Text('${state.email.error}')
-                  : null),
-          onChanged: (value) {
-            return context
-                .read<RegistrationBloc>()
-                .add(EmailChangeEvent(email: value));
-          },
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.email_rounded),
+            labelText: 'Email',
+            errorText: (!state.email.isValid && !state.status.isInitial)
+                ? '${state.email.error}'
+                : null,
+          ),
+          onChanged: (value) => context
+              .read<RegistrationBloc>()
+              .add(EmailChangeEvent(email: value)),
         );
       },
     );
@@ -141,10 +140,13 @@ class InputPassword extends StatelessWidget {
       builder: (context, state) {
         return TextField(
           obscureText: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.password_outlined),
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.password_outlined),
             labelText: 'Password',
+            errorText: (!state.password.isValid && !state.status.isInitial)
+                ? '${state.password.error}'
+                : null,
           ),
           onChanged: (value) => context
               .read<RegistrationBloc>()
