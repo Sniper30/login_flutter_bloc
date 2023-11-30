@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
 import 'package:login_app/login/login.dart';
 import 'package:login_app/registration/bloc/registration_bloc.dart';
 import 'package:login_app/repository/authentification_repository.dart';
 import 'package:login_app/repository/user_repository.dart';
+
+final controller = StreamController<bool>();
 
 class Registration extends StatefulWidget {
   const Registration({super.key});
@@ -37,46 +42,90 @@ class _RegistrationState extends State<Registration> {
   }
 }
 
-class FormRegistration extends StatelessWidget {
+class FormRegistration extends StatefulWidget {
   const FormRegistration({super.key});
+  @override
+  State<FormRegistration> createState() => _FormRegistrationState();
+}
 
+class _FormRegistrationState extends State<FormRegistration> {
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 290,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconApp(),
-          InputEmail(),
-          Padding(padding: EdgeInsets.all(10.00)),
-          InputPassword(),
-          Padding(padding: EdgeInsets.all(10.00)),
-          SubmitButton(),
-          LinkToLoginPage()
-        ],
+    return BlocListener<RegistrationBloc, RegistrationState>(
+      listener: (context, state) {
+        if (state.status.isFailure) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Authentication Failure')),
+            );
+        } else if (state.status.isInProgress) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Authentication In Pregress')),
+            );
+        } else if (state.status.isSuccess) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Authentication Success')),
+            );
+        }
+      },
+      child: const SizedBox(
+        width: 290,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconApp(),
+            InputEmail(),
+            Padding(padding: EdgeInsets.all(10.00)),
+            InputPassword(),
+            Padding(padding: EdgeInsets.all(10.00)),
+            SubmitButton(),
+            LinkToLoginPage()
+          ],
+        ),
       ),
     );
   }
 }
 
+class InputTest extends StatefulWidget {
+  const InputTest({super.key});
+
+  @override
+  State<InputTest> createState() => _InputTestState();
+}
+
+class _InputTestState extends State<InputTest> {
+  @override
+  Widget build(BuildContext context) {
+    return const TextField();
+  }
+}
+
 class InputEmail extends StatelessWidget {
   const InputEmail({super.key});
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         return TextField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.email_rounded),
-            labelText: 'Email',
-          ),
-          onChanged: (value) => context
-              .read<RegistrationBloc>()
-              .add(EmailChangeEvent(email: value)),
+          decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.email_rounded),
+              labelText: 'Email',
+              error: (!state.email.isValid && !state.status.isInitial)
+                  ? Text('${state.email.error}')
+                  : null),
+          onChanged: (value) {
+            return context
+                .read<RegistrationBloc>()
+                .add(EmailChangeEvent(email: value));
+          },
         );
       },
     );
@@ -118,7 +167,7 @@ class SubmitButton extends StatelessWidget {
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
           ),
-          child: const Text('register'),
+          child: const Text('Sign Up'),
           onPressed: () =>
               context.read<RegistrationBloc>().add(const OnSubmitEvent()),
         );
@@ -140,6 +189,6 @@ class LinkToLoginPage extends StatelessWidget {
           Navigator.of(context)
               .pushAndRemoveUntil(LoginPage.route(), (route) => false);
         },
-        child: const Text('already have an accont?'));
+        child: const Text('already have an accont? Sign In'));
   }
 }

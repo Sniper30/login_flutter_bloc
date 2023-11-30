@@ -33,7 +33,9 @@ class FormLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+      // TODO: implement listener
+    }, child: BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         return const SizedBox(
             width: 290,
@@ -51,7 +53,7 @@ class FormLogin extends StatelessWidget {
               ],
             ));
       },
-    );
+    ));
   }
 }
 
@@ -125,7 +127,7 @@ class ButtonSubmit extends StatelessWidget {
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
           ),
-          child: const Text('Login'),
+          child: const Text('Sign In'),
           onPressed: () async =>
               context.read<LoginBloc>().add(const OnSubmitEvent()),
         );
@@ -147,6 +149,6 @@ class LinkToRegistrationPage extends StatelessWidget {
           Navigator.of(context)
               .pushAndRemoveUntil(Registration.route(), (route) => false);
         },
-        child: const Text('No registrated yer?'));
+        child: const Text('No registrated yer? Sign Up'));
   }
 }
