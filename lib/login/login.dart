@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_app/login/bloc/login_bloc.dart';
+import 'package:login_app/registration/registration.dart';
 import 'package:login_app/repository/authentification_repository.dart';
 
 class LoginPage extends StatelessWidget {
@@ -10,7 +11,6 @@ class LoginPage extends StatelessWidget {
     return MaterialPageRoute(builder: (_) => const LoginPage());
   }
 
-//RepositoryProvider.of<AuthentificationRepository>(context)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,22 +31,12 @@ class FormLogin extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
-        return Column(
+        return const Column(
           children: [
-            TextField(
-              onChanged: (value) =>
-                  context.read<LoginBloc>().add(EmailChangeEvent(email: value)),
-            ),
-            TextField(
-              onChanged: (value) => context
-                  .read<LoginBloc>()
-                  .add(PasswordChangeEvent(password: value)),
-            ),
-            TextButton(
-              child: const Text('login'),
-              onPressed: () async =>
-                  context.read<LoginBloc>().add(const OnSubmitEvent()),
-            )
+            InputEmail(),
+            InputPassword(),
+            ButtonSubmit(),
+            LinkToRegistrationPage()
           ],
         );
       },
@@ -54,65 +44,65 @@ class FormLogin extends StatelessWidget {
   }
 }
 
-// class InputEmail extends StatelessWidget {
-//   const InputEmail({super.key});
+class InputEmail extends StatelessWidget {
+  const InputEmail({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<LoginBloc, LoginState>(
-//       builder: (context, state) {
-//         return TextField(
-//           onChanged: (value) =>
-//               context.read<LoginBloc>().add(EmailChangeEvent(email: value)),
-//         );
-//       },
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return TextField(
+          onChanged: (value) =>
+              context.read<LoginBloc>().add(EmailChangeEvent(email: value)),
+        );
+      },
+    );
+  }
+}
 
-// class InputPassword extends StatelessWidget {
-//   const InputPassword({super.key});
+class InputPassword extends StatelessWidget {
+  const InputPassword({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<LoginBloc, LoginState>(
-//       builder: (context, state) {
-//         return 
-//       },
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return TextField(
+          onChanged: (value) =>
+              context.read<LoginBloc>().add(EmailChangeEvent(email: value)),
+        );
+      },
+    );
+  }
+}
 
-// class ButtonSubmit extends StatelessWidget {
-//   const ButtonSubmit({super.key});
+class ButtonSubmit extends StatelessWidget {
+  const ButtonSubmit({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<LoginBloc, LoginState>(
-//       builder: (context, state) {
-//         return 
-//       },
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return TextButton(
+          child: const Text('login'),
+          onPressed: () async =>
+              context.read<LoginBloc>().add(const OnSubmitEvent()),
+        );
+      },
+    );
+  }
+}
 
-//text
+class LinkToRegistrationPage extends StatelessWidget {
+  const LinkToRegistrationPage({super.key});
 
-// TextField(
-//           onChanged: (value) =>
-//               context.read<LoginBloc>().add(EmailChangeEvent(email: value)),
-//         );
-
-//text
-// TextField(
-//           onChanged: (value) => context
-//               .read<LoginBloc>()
-//               .add(PasswordChangeEvent(password: value)),
-//         );
-
-//button
-// TextButton(
-//           child: const Text('login'),
-//           onPressed: () async =>
-//               context.read<LoginBloc>().add(const OnSubmitEvent()),
-//         )
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        onPressed: () {
+          Navigator.of(context)
+              .pushAndRemoveUntil(Registration.route(), (route) => false);
+        },
+        child: const Text('No registrated yer?'));
+  }
+}

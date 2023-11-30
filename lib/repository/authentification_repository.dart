@@ -8,12 +8,6 @@ enum AuthentificationStatus { unknow, authentificated, unauthentificated }
 class AuthentificationRepository {
   final _controller = StreamController<AuthentificationStatus>();
 
-  // Future<void> initialize() async {
-  //   await Firebase.initializeApp(
-  //     options: DefaultFirebaseOptions.currentPlatform,
-  //   );
-  // }
-
   Stream<AuthentificationStatus> get status async* {
     yield AuthentificationStatus.unauthentificated;
     yield* _controller.stream;

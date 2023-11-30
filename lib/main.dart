@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_app/authentification/bloc/authentification_bloc.dart';
+
 import 'package:login_app/home/home.dart';
 import 'package:login_app/login/Login.dart';
 import 'package:login_app/repository/authentification_repository.dart';
+import 'package:login_app/repository/user_repository.dart';
 import 'package:login_app/splash/splash_page.dart';
 
-void main() {
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   runApp(const MyApp());
 }
 
@@ -19,24 +25,27 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late AuthentificationRepository _authentificationRepository;
+  late UserRepository _userRepository;
 
   @override
   void initState() {
     _authentificationRepository = AuthentificationRepository();
+    _userRepository = UserRepository();
+    _userRepository.initializeFirebase().then((value) {});
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
-      value: _authentificationRepository,
-      child: BlocProvider(
-        create: (context) => AuthentificationBloc(
-            authentificationRepository:
-                RepositoryProvider.of<AuthentificationRepository>(context)),
-        child: const AppView(),
-      ),
-    );
+        value: _authentificationRepository,
+        child: BlocProvider(
+          create: (context) => AuthentificationBloc(
+            authentificationRepository: _authentificationRepository,
+            userRepository: _userRepository,
+          ),
+          child: const AppView(),
+        ));
   }
 }
 

@@ -9,3 +9,10 @@ abstract class User {
   int age;
   String biography;
 }
+
+abstract class UserCredentials {
+  UserCredentials({required this.email, required this.password});
+
+  String email;
+  String password;
+}
