@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:login_app/firebase_options.dart';
@@ -17,10 +18,11 @@ class UserRepository {
   }
 
   Future<void> register(String email, String password) async {
-    try {
-      await _userServices.register(email, password);
-    } catch (e) {
-      throw Exception(e.runtimeType);
-    }
+    await _userServices.register(email, password);
+  }
+
+  Future login(String email, String password) async {
+    return await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
   }
 }

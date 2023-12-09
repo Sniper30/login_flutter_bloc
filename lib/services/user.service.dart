@@ -9,4 +9,6 @@ class UserServices {
       throw Exception(e.runtimeType);
     }
   }
+
+  Future<void> login(String email, String password) async {}
 }

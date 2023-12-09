@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
+import 'package:login_app/home/home.dart';
 import 'package:login_app/login/bloc/login_bloc.dart';
 import 'package:login_app/registration/registration.dart';
 import 'package:login_app/repository/authentification_repository.dart';
+import 'package:login_app/repository/user_repository.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   static Route route() {
@@ -12,12 +15,19 @@ class LoginPage extends StatelessWidget {
   }
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
           create: (context) => LoginBloc(
-              authentificationRepository:
-                  RepositoryProvider.of<AuthentificationRepository>(context)),
+                authentificationRepository:
+                    RepositoryProvider.of<AuthentificationRepository>(context),
+                userRepository: UserRepository(),
+              ),
           child: const Flex(
             direction: Axis.horizontal,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -28,16 +38,42 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class FormLogin extends StatelessWidget {
+class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
 
   @override
+  State<FormLogin> createState() => _FormLoginState();
+}
+
+class _FormLoginState extends State<FormLogin> {
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(listener: (context, state) {
-      // TODO: implement listener
-    }, child: BlocBuilder<LoginBloc, LoginState>(
-      builder: (context, state) {
-        return const SizedBox(
+    return BlocListener<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state.status.isFailure) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Authentication Failure')),
+              );
+          } else if (state.status.isInProgress) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Authentication In Progress')),
+              );
+          } else if (state.status.isSuccess) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Authentication Success')),
+              );
+            Future.delayed(const Duration(seconds: 1));
+            Navigator.of(context)
+                .pushAndRemoveUntil(HomePage.route(), (route) => false);
+          }
+        },
+        child: const SizedBox(
             width: 290,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -51,9 +87,7 @@ class FormLogin extends StatelessWidget {
                 ButtonSubmit(),
                 LinkToRegistrationPage()
               ],
-            ));
-      },
-    ));
+            )));
   }
 }
 
@@ -80,10 +114,13 @@ class InputEmail extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
       return TextField(
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.email),
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          prefixIcon: const Icon(Icons.email),
           labelText: 'Email',
+          errorText: (!state.email.isValid && !state.status.isInitial)
+              ? '${state.email.error}'
+              : null,
         ),
         onChanged: (value) {
           context.read<LoginBloc>().add(EmailChangeEvent(email: value));
@@ -102,13 +139,17 @@ class InputPassword extends StatelessWidget {
       builder: (context, state) {
         return TextField(
           obscureText: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.password_outlined),
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.password_outlined),
             labelText: 'Password',
+            errorText: (!state.password.isValid && !state.status.isInitial)
+                ? '${state.password.error}'
+                : null,
           ),
-          onChanged: (value) =>
-              context.read<LoginBloc>().add(EmailChangeEvent(email: value)),
+          onChanged: (value) => context
+              .read<LoginBloc>()
+              .add(PasswordChangeEvent(password: value)),
         );
       },
     );
@@ -128,8 +169,10 @@ class ButtonSubmit extends StatelessWidget {
             foregroundColor: Colors.white,
           ),
           child: const Text('Sign In'),
-          onPressed: () async =>
-              context.read<LoginBloc>().add(const OnSubmitEvent()),
+          onPressed: () {
+            print(state.status);
+            return context.read<LoginBloc>().add(const OnSubmitEvent());
+          },
         );
       },
     );
