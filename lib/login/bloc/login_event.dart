@@ -17,3 +17,5 @@ class PasswordChangeEvent extends LoginEvent {
 class OnSubmitEvent extends LoginEvent {
   const OnSubmitEvent();
 }
+
+class SignOut extends LoginEvent {}

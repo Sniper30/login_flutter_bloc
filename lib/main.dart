@@ -9,10 +9,6 @@ import 'package:login_app/repository/user_repository.dart';
 import 'package:login_app/splash/splash_page.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
   runApp(const MyApp());
 }
 
@@ -77,7 +73,6 @@ class _AppViewState extends State<AppView> {
                 _navigator.pushAndRemoveUntil(
                     LoginPage.route(), (route) => false);
                 break;
-              default:
             }
           },
           child: child,

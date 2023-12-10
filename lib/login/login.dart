@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import 'package:login_app/home/home.dart';
 import 'package:login_app/login/bloc/login_bloc.dart';
 import 'package:login_app/registration/registration.dart';
 import 'package:login_app/repository/authentification_repository.dart';
@@ -68,9 +67,6 @@ class _FormLoginState extends State<FormLogin> {
               ..showSnackBar(
                 const SnackBar(content: Text('Authentication Success')),
               );
-            Future.delayed(const Duration(seconds: 1));
-            Navigator.of(context)
-                .pushAndRemoveUntil(HomePage.route(), (route) => false);
           }
         },
         child: const SizedBox(

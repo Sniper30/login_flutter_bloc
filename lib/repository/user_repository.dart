@@ -25,4 +25,8 @@ class UserRepository {
     return await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
   }
+
+  Future? signout() async {
+    await FirebaseAuth.instance.signOut();
+  }
 }

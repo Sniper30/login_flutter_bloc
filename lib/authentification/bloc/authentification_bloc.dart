@@ -30,5 +30,8 @@ class AuthentificationBloc
           return emit(AuthentificationState(status: event.status));
       }
     });
+    on<SignOut>((event, emit) async {
+      await _authentificationRepository.signout();
+    });
   }
 }

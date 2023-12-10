@@ -11,3 +11,8 @@ class AuthentificationStatusChange extends AuthentificationEvent {
   @override
   List get props => [status];
 }
+
+class SignOut extends AuthentificationEvent {
+  @override
+  List get props => [];
+}

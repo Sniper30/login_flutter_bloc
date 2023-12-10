@@ -19,10 +19,21 @@ class AuthentificationRepository extends UserRepository {
   @override
   login(String email, String password) async {
     try {
-      return await super.login(email, password);
+      await super.login(email, password);
+      Future.delayed(const Duration(seconds: 1));
+      _controller.add(AuthentificationStatus.authentificated);
     } on FirebaseException catch (e) {
       print('hay un error ${e.code}');
-      return Future(() => false);
+      _controller.add(AuthentificationStatus.unknow);
     }
+  }
+
+  @override
+  Future? signout() async {
+    await super.signout();
+    Future.delayed(const Duration(seconds: 1));
+
+    _controller.add(AuthentificationStatus.unknow);
+    return;
   }
 }
